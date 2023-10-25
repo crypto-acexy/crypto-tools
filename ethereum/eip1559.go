@@ -7,8 +7,7 @@ import (
 
 var ethDecimal = decimal.NewFromInt(1000000000)
 
-type feeRequest struct {
-
+type feeDetailRequest struct {
 	// 实际消耗Gas
 	gas decimal.Decimal
 
@@ -22,20 +21,30 @@ type feeRequest struct {
 	priorityFeeParGas decimal.Decimal
 }
 
-func NewFeeRequest(gas int32, maxFeePerGas, netFeePerGas, priorityFeeParGas float64) *feeRequest {
-	gasDecimal := decimal.NewFromInt32(gas)
-	netFeePerGasDecimal := decimal.NewFromFloat(netFeePerGas)
-	maxFeePerGasDecimal := decimal.NewFromFloat(maxFeePerGas)
-	priorityFeeParGasDecimal := decimal.NewFromFloat(priorityFeeParGas)
-	return &feeRequest{
-		gas:               gasDecimal,
-		netFeePerGas:      netFeePerGasDecimal,
-		maxFeePerGas:      maxFeePerGasDecimal,
-		priorityFeeParGas: priorityFeeParGasDecimal,
+type feeEstimationRequest struct {
+	netMinFeePerGas   decimal.Decimal
+	netMaxFeePerGas   decimal.Decimal
+	priorityFeeParGas decimal.Decimal
+}
+
+func NewFeeEstimationRequest(netMinFeePerGas, netMaxFeePerGas, priorityFeeParGas float64) *feeEstimationRequest {
+	return &feeEstimationRequest{
+		netMinFeePerGas:   decimal.NewFromFloat(netMinFeePerGas),
+		netMaxFeePerGas:   decimal.NewFromFloat(netMaxFeePerGas),
+		priorityFeeParGas: decimal.NewFromFloat(priorityFeeParGas),
 	}
 }
 
-func (f *feeRequest) FeeDetail() {
+func NewFeeDetailRequest(gas int32, maxFeePerGas, netFeePerGas, priorityFeeParGas float64) *feeDetailRequest {
+	return &feeDetailRequest{
+		gas:               decimal.NewFromInt32(gas),
+		netFeePerGas:      decimal.NewFromFloat(netFeePerGas),
+		maxFeePerGas:      decimal.NewFromFloat(maxFeePerGas),
+		priorityFeeParGas: decimal.NewFromFloat(priorityFeeParGas),
+	}
+}
+
+func (f *feeDetailRequest) Calc() {
 	allowMaxFee := f.maxFeePerGas.Mul(f.gas)
 	// 基础手续费
 	baseFee := f.netFeePerGas.Mul(f.gas)
@@ -55,4 +64,8 @@ func (f *feeRequest) FeeDetail() {
 
 	fmt.Printf("基础网络费用为: %s Gwei %s Ether\n", baseFee.String(), baseFee.DivRound(ethDecimal, 18).String())
 	fmt.Printf("总支付费用为: %s Gwei %s Ether\n", baseFee.Add(minerFee).String(), baseFee.Add(minerFee).DivRound(ethDecimal, 18).String())
+}
+
+func (f *feeEstimationRequest) Calc() {
+	fmt.Printf("maxFeePerGas 的范围应当在 %s Gwei ~ %s Gwei 之间", f.netMinFeePerGas.Add(f.priorityFeeParGas).String(), f.netMaxFeePerGas.Add(f.priorityFeeParGas))
 }
