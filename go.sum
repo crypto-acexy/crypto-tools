@@ -1,2 +1,6 @@
+github.com/acexy/golang-toolkit v0.0.4-0.20231201085331-dabbee31d01c h1:7iDhhDm1h5ZwUcYnpRlOn9ooH5X4PsKfC3A5gzuS/5U=
+github.com/acexy/golang-toolkit v0.0.4-0.20231201085331-dabbee31d01c/go.mod h1:vq3g06+R23+NN+cFWENxuv/+o+HFfZXufVmCjx48Cvg=
+github.com/acexy/golang-toolkit v0.0.4-0.20231201093104-ac20540fef45 h1:Kdgq4+RaWFXsRfzcw26diErgvOSu0Ii7LGZUdVeLCB4=
+github.com/acexy/golang-toolkit v0.0.4-0.20231201093104-ac20540fef45/go.mod h1:vq3g06+R23+NN+cFWENxuv/+o+HFfZXufVmCjx48Cvg=
 github.com/shopspring/decimal v1.3.1 h1:2Usl1nmF/WZucqkFZhnfFYxxxu8LG21F6nPQBE5gKV8=
 github.com/shopspring/decimal v1.3.1/go.mod h1:DKyhrW/HYNuLGql+MJL6WCR6knT2jwCFRcu2hWCYk4o=
