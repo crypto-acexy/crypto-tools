@@ -5,9 +5,9 @@ import "testing"
 func TestFeeDetail(t *testing.T) {
 	NewFeeDetailRequest(
 		21000,
-		40,
-		12.921534465,
-		0.01,
+		267,
+		236.910013199,
+		20,
 	).Calc()
 }
 
