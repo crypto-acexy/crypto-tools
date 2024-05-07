@@ -3,6 +3,7 @@ package utxo
 import (
 	"errors"
 	"fmt"
+	"github.com/acexy/golang-toolkit/util/json"
 	"strings"
 )
 
@@ -47,29 +48,28 @@ type StandardUtxoOutput struct {
 }
 
 type StandardUtxoAnalyzeResult struct {
-	Value     int
-	Hash      string
-	HashIndex int
-	Height    int
-	Used      bool
+	Value  int
+	Hash   string
+	Height int
+	Used   bool
 }
 
-func Analyze(data DataPlatform) ([]*StandardUtxoAnalyzeResult, error) {
+func Analyze(data DataPlatform) error {
 
 	rawData, err := data.convertRawData()
 
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	if rawData == nil {
-		return nil, errors.New("原始数据解析失败")
+		return errors.New("原始数据解析失败")
 	}
 
 	targetAddress := strings.ToLower(rawData.Address)
 	txs := rawData.Txs
 	if len(txs) == 0 {
-		return nil, errors.New("无交易数据")
+		return errors.New("无交易数据")
 	}
 	fmt.Println("分析地址", targetAddress)
 
@@ -79,19 +79,19 @@ func Analyze(data DataPlatform) ([]*StandardUtxoAnalyzeResult, error) {
 	for i := len(txs) - 1; i >= 0; i-- {
 		tx := txs[i]
 		inputs := tx.Inputs
-		fmt.Println("交易", tx.Hash, tx.BlockIndex, tx.BlockHeight)
+		fmt.Println("交易 hash", tx.Hash, "高度", tx.BlockHeight)
 		for _, input := range inputs {
+
 			if strings.ToLower(input.Address) == targetAddress {
 				analyze := StandardUtxoAnalyzeResult{
-					Value:     input.OutputValue,
-					Hash:      input.PrevHash,
-					HashIndex: input.OutputIndex,
-					Height:    input.Height,
-					Used:      true,
+					Value:  input.OutputValue,
+					Hash:   input.PrevHash,
+					Height: input.Height,
+					Used:   true,
 				}
 
-				utxoKey := fmt.Sprintf("hash:%s hashIndex:%d height:%d value:%d", analyze.Hash, analyze.HashIndex, analyze.Height, analyze.Value)
-				fmt.Println("	消耗一块utxo", utxoKey)
+				utxoKey := fmt.Sprintf("hash:%s", analyze.Hash)
+				fmt.Println("	消耗一块utxo hash", analyze.Hash, "value", analyze.Value)
 				v, ok := allHistory[utxoKey]
 				if ok {
 					v.Used = true
@@ -106,19 +106,25 @@ func Analyze(data DataPlatform) ([]*StandardUtxoAnalyzeResult, error) {
 		for _, output := range outputs {
 			if strings.ToLower(output.Address) == targetAddress {
 				analyze := StandardUtxoAnalyzeResult{
-					Value:     output.Value,
-					Hash:      tx.Hash,
-					HashIndex: tx.BlockIndex,
-					Height:    tx.BlockHeight,
-					Used:      false,
+					Value:  output.Value,
+					Hash:   tx.Hash,
+					Height: tx.BlockHeight,
+					Used:   false,
 				}
-				utxoKey := fmt.Sprintf("hash:%s hashIndex:%d height:%d value:%d", analyze.Hash, analyze.HashIndex, analyze.Height, analyze.Value)
-				fmt.Println("	发现一块utxo", utxoKey)
+				utxoKey := fmt.Sprintf("hash:%s", analyze.Hash)
+				fmt.Println("	发现一块utxo hash", analyze.Hash, "value", analyze.Value)
 				allHistory[utxoKey] = &analyze
 				results = append(results, &analyze)
-
 			}
 		}
 	}
-	return results, nil
+	balance := 0
+	for _, result := range results {
+		if !result.Used {
+			balance += result.Value
+		}
+	}
+	fmt.Println("分析结果", "总余额", balance, "详情")
+	fmt.Println(json.ToJsonFormat(results))
+	return nil
 }

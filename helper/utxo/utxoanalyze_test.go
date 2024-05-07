@@ -1,15 +1,19 @@
 package utxo
 
 import (
-	"fmt"
-	"github.com/acexy/golang-toolkit/util/json"
 	"testing"
 )
 
 func TestBlockcrypher(t *testing.T) {
-	result, err := Analyze(NewBlockcrypherPlatform(Bitcoin, "bc1qur5ym67kljnwrqkw75t0qafe3mq9fxfxn07dwf", "localhost:7890"))
+	err := Analyze(NewBlockcrypherPlatform(Bitcoin, "bc1qnfesnxke9ekf0zs8p75gd2qsj6kqvvh0s6j73v", "localhost:7890"))
 	if err != nil {
 		return
 	}
-	fmt.Println(json.ToJson(result))
+}
+
+func TestMempool(t *testing.T) {
+	err := Analyze(NewMempoolPlatform(Bitcoin, "bc1qur5ym67kljnwrqkw75t0qafe3mq9fxfxn07dwf", "localhost:7890"))
+	if err != nil {
+		return
+	}
 }
