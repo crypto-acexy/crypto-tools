@@ -23,6 +23,4 @@ func rsaKeyToBit() {
 
 	binaries := conversion.NewFormBytes(prik.D.Bytes())
 	fmt.Println(binaries.To8Bits())
-	// c726024de0c791d7cb8f1d951eff458b742dd25d264cb04b435af9d31824bd3f
-	fmt.Println(binaries.To2HexString())
 }
