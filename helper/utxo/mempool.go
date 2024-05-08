@@ -1,6 +1,7 @@
 package utxo
 
 import (
+	"errors"
 	"github.com/acexy/golang-toolkit/http"
 	"github.com/acexy/golang-toolkit/logger"
 	"github.com/jinzhu/copier"
@@ -55,6 +56,9 @@ func (m *MempoolPlatformData) chain() Chain {
 }
 
 func (m *MempoolPlatformData) convertRawData() (*StandardUtxoData, error) {
+	if m.chainId != Bitcoin {
+		return nil, errors.New("only support Bitcoin chain")
+	}
 	utxoData := make([]*MempoolUtxoTxn, 0)
 	resp, err := m.client.R().SetReturnStruct(&utxoData).Get("https://mempool.space/api/address/" + m.address + "/txs")
 

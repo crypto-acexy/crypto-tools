@@ -9,6 +9,7 @@ import (
 
 const (
 	Bitcoin Chain = iota
+	Litecoin
 )
 
 type Chain int

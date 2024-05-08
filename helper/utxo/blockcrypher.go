@@ -1,11 +1,18 @@
 package utxo
 
 import (
+	"errors"
+	"fmt"
 	"github.com/acexy/golang-toolkit/http"
 	"github.com/acexy/golang-toolkit/logger"
 	"github.com/jinzhu/copier"
 	"time"
 )
+
+var blockcypherUrlConfig = map[Chain]string{
+	Bitcoin:  "https://api.blockcypher.com/v1/btc/main/addrs/%s/full?limit=50&unspentOnly=true&includeScript=true",
+	Litecoin: "https://api.blockcypher.com/v1/ltc/main/addrs/%s/full?limit=50&unspentOnly=true&includeScript=true",
+}
 
 type BlockcypherUtxoData struct {
 	Address string                `json:"address"`
@@ -53,11 +60,17 @@ func (b *BlockcrypherPlatformData) chain() Chain {
 func (b *BlockcrypherPlatformData) convertRawData() (*StandardUtxoData, error) {
 	var utxoData BlockcypherUtxoData
 
-	resp, err := b.client.R().SetReturnStruct(&utxoData).Get("https://api.blockcypher.com/v1/btc/main/addrs/" + b.address + "/full?limit=50&unspentOnly=true&includeScript=true")
+	uri := blockcypherUrlConfig[b.chain()]
+	if uri == "" {
+		return nil, errors.New("not support this chain now")
+	}
+
+	resp, err := b.client.R().SetReturnStruct(&utxoData).Get(fmt.Sprintf(uri, b.address))
 	if err != nil || resp.String() == "{\"error\": \"Limits reached.\"}" {
 		logger.Logrus().WithError(err).Println("解析原始json数据失败", resp.String())
 		return nil, err
 	}
+
 	txs := utxoData.Txs
 	for i := len(txs) - 1; i >= 0; i-- {
 		tx := txs[i]
