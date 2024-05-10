@@ -13,6 +13,7 @@ import (
 var blockcypherUrlConfig = map[Chain]string{
 	Bitcoin:  "https://api.blockcypher.com/v1/btc/main/addrs/%s/full?limit=50&unspentOnly=true&includeScript=true",
 	Litecoin: "https://api.blockcypher.com/v1/ltc/main/addrs/%s/full?limit=50&unspentOnly=true&includeScript=true",
+	Dogecoin: "https://api.blockcypher.com/v1/doge/main/addrs/%s/full?limit=50&unspentOnly=true&includeScript=true",
 }
 
 type BlockcypherUtxoData struct {
