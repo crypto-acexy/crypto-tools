@@ -6,6 +6,7 @@ import (
 	"github.com/acexy/golang-toolkit/http"
 	"github.com/acexy/golang-toolkit/logger"
 	"github.com/jinzhu/copier"
+	"strings"
 	"time"
 )
 
@@ -94,7 +95,7 @@ func (b *BlockcrypherPlatformData) convertRawData() (*StandardUtxoData, error) {
 					break
 				}
 				nextInput = moreTx.NextInputs
-				time.Sleep(time.Second * 5)
+				time.Sleep(time.Second * 10)
 			}
 		}
 
@@ -111,7 +112,18 @@ func (b *BlockcrypherPlatformData) convertRawData() (*StandardUtxoData, error) {
 				}
 
 				if len(moreTx.Outputs) > 0 {
+					hitTargetAddress := false
+					for _, output := range moreTx.Outputs {
+						if strings.ToLower(output.Addresses[0]) == strings.ToLower(utxoData.Address) {
+							hitTargetAddress = true
+							break
+						}
+					}
 					tx.Outputs = append(tx.Outputs, moreTx.Outputs...)
+					if hitTargetAddress {
+						logger.Logrus().Debugln("已找到目标UTXO地址忽略更多数据")
+						break
+					}
 				} else {
 					break
 				}
@@ -120,7 +132,7 @@ func (b *BlockcrypherPlatformData) convertRawData() (*StandardUtxoData, error) {
 					break
 				}
 				nextOutput = moreTx.NextOutputs
-				time.Sleep(time.Second * 5)
+				time.Sleep(time.Second * 10)
 			}
 		}
 
