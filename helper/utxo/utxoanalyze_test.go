@@ -12,7 +12,7 @@ func TestBlockcrypherBitcoin(t *testing.T) {
 }
 
 func TestBlockcrypherLitecoin(t *testing.T) {
-	err := Analyze(NewBlockcrypherPlatform(Litecoin, "ltc1qtcf8j6rc50hu3arfhz23mj64e3eue0z8ph99va", "localhost:7890"))
+	err := Analyze(NewBlockcrypherPlatform(Litecoin, "ltc1q7tz5cldmjwcrdgyu2ld38n3qkvc6cy8f4zv7hc", "localhost:7890"))
 	if err != nil {
 		return
 	}

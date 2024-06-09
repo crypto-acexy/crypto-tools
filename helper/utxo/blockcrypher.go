@@ -6,6 +6,7 @@ import (
 	"github.com/acexy/golang-toolkit/http"
 	"github.com/acexy/golang-toolkit/logger"
 	"github.com/jinzhu/copier"
+	"math/rand"
 	"strings"
 	"time"
 )
@@ -96,7 +97,7 @@ func (b *BlockcrypherPlatformData) convertRawData() (*StandardUtxoData, error) {
 					break
 				}
 				nextInput = moreTx.NextInputs
-				time.Sleep(time.Second * 10)
+				time.Sleep(time.Second * 10 * time.Duration(rand.Intn(2)+1))
 			}
 		}
 
