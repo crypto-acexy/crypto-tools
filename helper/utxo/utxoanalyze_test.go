@@ -5,7 +5,7 @@ import (
 )
 
 func TestBlockcrypherBitcoin(t *testing.T) {
-	err := Analyze(NewBlockcrypherPlatform(Bitcoin, "bc1qlr2enam7fk6gff3ynqp5jp4gpdegsgd2v0ptx6", "localhost:7890"))
+	err := Analyze(NewBlockcrypherPlatform(Bitcoin, "bc1qf6pa3esrdx0pfvw9rqmm0pp09xjfdu9awk7ve7", "localhost:7890"))
 	if err != nil {
 		return
 	}
@@ -19,7 +19,7 @@ func TestBlockcrypherLitecoin(t *testing.T) {
 }
 
 func TestBlockcrypherDogecoin(t *testing.T) {
-	err := Analyze(NewBlockcrypherPlatform(Dogecoin, "DBnVJKa5B78JBcc8R9abPqCLNbStqws9Dx", "localhost:7890"))
+	err := Analyze(NewBlockcrypherPlatform(Dogecoin, "DRG4hkxxDMtXazaxPMrqmRjBao5uuVcgxY", "localhost:1087"))
 	if err != nil {
 		return
 	}

@@ -6,6 +6,8 @@ import (
 	"github.com/acexy/golang-toolkit/http"
 	"github.com/acexy/golang-toolkit/logger"
 	"github.com/jinzhu/copier"
+	"math/rand"
+	"strings"
 	"time"
 )
 
@@ -121,69 +123,69 @@ func (b *BlockcrypherPlatformData) loadTx(utxoData *BlockcypherUtxoData) (*Stand
 	txs := utxoData.Txs
 	for i := len(txs) - 1; i >= 0; i-- {
 		tx := txs[i]
-		//if tx.NextInputs != "" {
-		//	nextInput := tx.NextInputs
-		//	for {
-		//		var moreTx BlockcypherUtxoTxn
-		//		resp, err := b.client.R().SetReturnStruct(&moreTx).Get(nextInput)
-		//		if err != nil || resp.String() == "{\"error\": \"Limits reached.\"}" {
-		//			logger.Logrus().WithError(err).Error("查询更多utxo数据异常", nextInput)
-		//			return nil, err
-		//		} else {
-		//			logger.Logrus().Debugln("补充查询output", nextInput)
-		//		}
-		//		if len(moreTx.Inputs) > 0 {
-		//			tx.Inputs = append(tx.Inputs, moreTx.Inputs...)
-		//		} else {
-		//			break
-		//		}
-		//		if moreTx.NextInputs == "" {
-		//			break
-		//		}
-		//		nextInput = moreTx.NextInputs
-		//		time.Sleep(time.Second * 10 * time.Duration(rand.Intn(2)+1))
-		//	}
-		//}
+		if tx.NextInputs != "" {
+			nextInput := tx.NextInputs
+			for {
+				var moreTx BlockcypherUtxoTxn
+				resp, err := b.client.R().SetReturnStruct(&moreTx).Get(nextInput)
+				if err != nil || resp.String() == "{\"error\": \"Limits reached.\"}" {
+					logger.Logrus().WithError(err).Error("查询更多utxo数据异常", nextInput)
+					return nil, err
+				} else {
+					logger.Logrus().Debugln("补充查询output", nextInput)
+				}
+				if len(moreTx.Inputs) > 0 {
+					tx.Inputs = append(tx.Inputs, moreTx.Inputs...)
+				} else {
+					break
+				}
+				if moreTx.NextInputs == "" {
+					break
+				}
+				nextInput = moreTx.NextInputs
+				time.Sleep(time.Second * 10 * time.Duration(rand.Intn(2)+1))
+			}
+		}
 
-		//if tx.NextOutputs != "" {
-		//	nextOutput := tx.NextOutputs
-		//	for {
-		//		var moreTx BlockcypherUtxoTxn
-		//		resp, err := b.client.R().SetReturnStruct(&moreTx).Get(nextOutput)
-		//		if err != nil || resp.String() == "{\"error\": \"Limits reached.\"}" {
-		//			logger.Logrus().WithError(err).Error("查询更多utxo数据异常", resp.String(), nextOutput)
-		//			if err == nil {
-		//				err = errors.New("请求触发限制")
-		//			}
-		//			return nil, err
-		//		} else {
-		//			logger.Logrus().Debugln("补充查询output", nextOutput)
-		//		}
-		//
-		//		if len(moreTx.Outputs) > 0 {
-		//			hitTargetAddress := false
-		//			for _, output := range moreTx.Outputs {
-		//				if strings.ToLower(output.Addresses[0]) == strings.ToLower(utxoData.Address) {
-		//					hitTargetAddress = true
-		//					break
-		//				}
-		//			}
-		//			tx.Outputs = append(tx.Outputs, moreTx.Outputs...)
-		//			if hitTargetAddress {
-		//				logger.Logrus().Debugln("已找到目标UTXO地址忽略更多数据")
-		//				break
-		//			}
-		//		} else {
-		//			break
-		//		}
-		//
-		//		if moreTx.NextOutputs == "" {
-		//			break
-		//		}
-		//		nextOutput = moreTx.NextOutputs
-		//		time.Sleep(time.Second * 10)
-		//	}
-		//}
+		if tx.NextOutputs != "" {
+			nextOutput := tx.NextOutputs
+			for {
+				var moreTx BlockcypherUtxoTxn
+				resp, err := b.client.R().SetReturnStruct(&moreTx).Get(nextOutput)
+				if err != nil || resp.String() == "{\"error\": \"Limits reached.\"}" {
+					logger.Logrus().WithError(err).Error("查询更多utxo数据异常", resp.String(), nextOutput)
+					if err == nil {
+						err = errors.New("请求触发限制")
+					}
+					return nil, err
+				} else {
+					logger.Logrus().Debugln("补充查询output", nextOutput)
+				}
+
+				if len(moreTx.Outputs) > 0 {
+					hitTargetAddress := false
+					for _, output := range moreTx.Outputs {
+						if strings.ToLower(output.Addresses[0]) == strings.ToLower(utxoData.Address) {
+							hitTargetAddress = true
+							break
+						}
+					}
+					tx.Outputs = append(tx.Outputs, moreTx.Outputs...)
+					if hitTargetAddress {
+						logger.Logrus().Debugln("已找到目标UTXO地址忽略更多数据")
+						break
+					}
+				} else {
+					break
+				}
+
+				if moreTx.NextOutputs == "" {
+					break
+				}
+				nextOutput = moreTx.NextOutputs
+				time.Sleep(time.Second * 10)
+			}
+		}
 
 		inputs := tx.Inputs
 		for _, input := range inputs {

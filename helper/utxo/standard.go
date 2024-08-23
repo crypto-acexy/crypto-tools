@@ -40,6 +40,7 @@ type StandardUtxoInput struct {
 	OutputValue int
 	Address     string
 	Height      int
+	Index       int
 }
 
 type StandardUtxoOutput struct {
@@ -54,6 +55,7 @@ type StandardUtxoAnalyzeResult struct {
 	Hash   string
 	Height int
 	Used   bool
+	Index  int
 }
 
 func Analyze(data DataPlatform) error {
@@ -75,7 +77,7 @@ func Analyze(data DataPlatform) error {
 	}
 	fmt.Println("分析地址", targetAddress)
 
-	allHistory := make(map[string]*StandardUtxoAnalyzeResult, 0)
+	allHistory := make(map[string]*StandardUtxoAnalyzeResult)
 	results := make([]*StandardUtxoAnalyzeResult, 0)
 
 	for i := len(txs) - 1; i >= 0; i-- {
